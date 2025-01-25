@@ -49,7 +49,8 @@ class HexLoader {
   Future<bool> toIHEXFile(String fileName, [int? dataRecordSize, bool? doOverRide]) async {
     int len = dataRecordSize ?? this.dataRecordSize;
     if (len % 16 != 0) {
-      print("このプログラムは16Byteの倍数でのみIntel HEXファイルの出力が可能です。処理を中止します。");
+      print("このプログラムは16Byteの倍数でのみIntel HEXファイルの出力が可能です。");
+      print("HEXファイルの作成を中止します。");
       return false;
     }
 
@@ -103,6 +104,7 @@ class HexLoader {
     }
     catch (e) {
       print("不測のエラーが発生しました: $e");
+      print("ファイルの作成を中止します。");
       return false;
     }
   }
@@ -119,18 +121,18 @@ class HexLoader {
     return ret;
   }
 
-  // Intel HEXファイルからデータを読みだすコンストラクタのラッパー関数
+  // Intel HEXファイルからデータを読みだしてインスタンスを生成する
   static Future<HexLoader?> load(String fileName) async {
     try {
       final file = File(fileName);
-      if (!await file.exists()) {
-        print("ファイルが存在しません");
+      if (!(await file.exists())) {
+        print("HEXファイルが存在しません");
         return null;
       }
 
       final lines = await file.readAsLines();
       if (lines.isEmpty) {
-        print("ファイルが空です");
+        print("HEXファイルが空です");
         return null;
       }
 
@@ -212,7 +214,7 @@ class HexLoader {
           int len = data.length ~/ 2;
           List<int>? tmpData = parseData(data, len);
           if (tmpData == null) {
-            print("アドレス 0x${tmpAddr.toRadixString(16).toUpperCase()} に代入するデータ ${data} のデータサイズ ${len} が不正です。処理を中止します。");
+            print("アドレス 0x${tmpAddr.toRadixString(16).toUpperCase()} に代入するデータ ${data} あるいはデータサイズ ${len} が不正です。処理を中止します。");
             feTerm = true;
           }
           else {
@@ -232,14 +234,17 @@ class HexLoader {
     }
   }
 
-  // HEX文字列(バイナリ)を1ByteずつパースしてInt型配列として返すクラス関数
+  // HEX文字列(バイナリ)を1ByteずつパースしてInt型配列として返す
   static List<int>? parseData(String strData, int dLen) {
     // データサイズ不正のハンドリング
     if (strData.length != dLen * 2) return null;
 
     List<int> datas = List.generate(dLen, (i) => 0);
-    for (int i = 0; i < dLen; i++)
-      datas[i] = int.parse("0x" + strData[2 * i] + strData[2 * i + 1]);
+    for (int i = 0; i < dLen; i++) {
+      int? tempData = int.tryParse(strData[2 * i] + strData[2 * i + 1], radix: 16);
+      if (tempData == null) return null;
+      datas[i] = tempData;
+    }
 
     return datas;
   }

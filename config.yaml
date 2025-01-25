@@ -1,0 +1,7 @@
+# 00: DataRecord に関する設定
+DataRecordSetting:
+    # 書き出し時に読み込み元HEXと同じデータサイズを使用するか否か(bool)
+    UseCustomDataRecordSize: false
+    # 1レコードあたりのデータサイズを指定する(un-sig int)
+    # UseCustomDataRecordSize == false ならばこの設定は無視される
+    DataRecordSize: 16
