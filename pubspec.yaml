@@ -1,0 +1,5 @@
+name: HexReplacer
+description: For Intel HEX files, the specified byte from the specified address is replaced by the specified data.
+version: 0.1.0
+environment:
+  sdk: '>=3.0.0'
