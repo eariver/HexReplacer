@@ -1,5 +1,6 @@
 library hexloader;
 import 'dart:io';
+import 'package:csv/csv.dart';
 
 class HexLoader {
   late final int strtAddr;
@@ -100,6 +101,40 @@ class HexLoader {
       writeBuff += ":00000001FF\n";
       await file.writeAsString(writeBuff, mode: FileMode.write);
 
+      return true;
+    }
+    catch (e) {
+      print("不測のエラーが発生しました: $e");
+      print("ファイルの作成を中止します。");
+      return false;
+    }
+  }
+
+  // HEXデータをCSVに変形して出力する、1行16バイトとする
+  Future<bool> toCSVFile(String fileName, [bool? doOverRide]) async {
+    List<List<String>> out = List.generate((this.endAddr - this.strtAddr) ~/ 16 + 2, (i) => List.filled(2, ""));
+    out[0][0] = "Addr";
+    out[0][1] = "Data";
+    int cnt = 0;
+    this.data.forEach((lisData) {
+      String temp = "";
+      lisData.forEach((d) {
+        temp += d.toRadixString(16).padLeft(2, "0").toUpperCase();
+      });
+      out[cnt + 1][0] = (this.strtAddr + 16 * cnt).toRadixString(16).padLeft(8, "0").toUpperCase();
+      out[cnt + 1][1] = temp;
+      cnt++;
+    });
+
+    String csvData = const ListToCsvConverter().convert(out);
+    try {
+      var file = File(fileName);
+      if (await file.exists() && !(doOverRide ?? false)) {
+        print("既にファイルが存在しているため、処理を中止します。");
+        return false;
+      }
+
+      await file.writeAsString(csvData, mode: FileMode.write);
       return true;
     }
     catch (e) {
