@@ -1,4 +1,4 @@
-# HexReplacer v1.2.0
+# HexReplacer v1.2.1
 
 ## About
 Dart練習用のCLIアプリ。Intel HEX形式のバイナリファイルから指定されたアドレスから指定バイト分のデータを上書きする。

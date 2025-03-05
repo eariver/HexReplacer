@@ -8,7 +8,7 @@ Future<void> main(List<String> args) async {
   // コマンドライン引数パース
   if (args.length == 0 || args[0] == "-h") {
     print("=============================================");
-    print(" HexReplacer v1.2.0");
+    print(" HexReplacer v1.2.1");
     print(" author: Eariver (2025/03/06)");
     print(" url: https://github.com/eariver/HexReplacer");
     print("=============================================");
