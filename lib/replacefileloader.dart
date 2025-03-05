@@ -17,7 +17,7 @@ class ReplaceFileLoader {
   }
 
   // CSVファイルから置き換え用データを読みだしてインスタンスを生成する
-  static Future<ReplaceFileLoader?> load(String fileName) async {
+  static Future<ReplaceFileLoader?> load(String fileName, [bool? doLoadNoDataRow]) async {
     try {
       final file = File(fileName);
       if (!(await file.exists())) {
@@ -58,10 +58,13 @@ class ReplaceFileLoader {
           }
           else {
             List<int>? dat = HexLoader.parseData(row[3].toString(), len);
-            if (dat == null) {
+            if (dat == null && !(doLoadNoDataRow ?? false)) {
               print("$rCnt 行目のデータが不正です。スキップします。");
             }
-            else datTemp.add(ReplaceData(strtAddr, len, dat, name));
+            else if (doLoadNoDataRow!) {
+              datTemp.add(ReplaceData(strtAddr, len, List<int>.empty(), name));
+            }
+            else datTemp.add(ReplaceData(strtAddr, len, dat!, name));
           }
         }
       });

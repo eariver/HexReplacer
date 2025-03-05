@@ -46,6 +46,34 @@ class HexLoader {
     return true;
   }
 
+  // 開始アドレスと終了アドレスを指定してデータを抜き出すメソッド
+  // 見つからないときはnullを返す
+  List<int>? extractData(int strt, int len) {
+    // 範囲外のエラーハンドル
+    if (!(strt >= this.strtAddr && (strt + len - 1) <= this.endAddr)) {
+      print("アドレス ${strt.toRadixString(16)} - ${(strt + len - 1).toRadixString(16)} は、このHEXファイルの範囲 ${this.strtAddr.toRadixString(16)} - ${this.endAddr.toRadixString(16)} の外にあります。");
+      return null;
+    }
+
+    // 開始アドレスの要素番号サーチ
+    int currRow = (strt - this.strtAddr) ~/ 16;
+    int currCol = (strt - this.strtAddr) % 16;
+
+    List<int> ret = List.filled(len, 0);
+    for (int i = 0; i < len; i++) {
+      ret[i] = this.data[currRow][currCol];
+      if (currCol != 15) {
+        currCol++;
+      }
+      else {
+        currCol = 0;
+        currRow++;
+      }
+    }
+
+    return ret;
+  }
+
   // HEXデータをファイル出力するメソッド、データレコードサイズを指定しなければメンバフィールドの値を使う
   Future<bool> toIHEXFile(String fileName, [int? dataRecordSize, bool? doOverRide]) async {
     int len = dataRecordSize ?? this.dataRecordSize;
