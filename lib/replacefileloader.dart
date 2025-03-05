@@ -58,13 +58,13 @@ class ReplaceFileLoader {
           }
           else {
             List<int>? dat = HexLoader.parseData(row[3].toString(), len);
-            if (dat == null && !(doLoadNoDataRow ?? false)) {
-              print("$rCnt 行目のデータが不正です。スキップします。");
+            if (dat == null) { //&& !(doLoadNoDataRow ?? false)) {
+              if (!(doLoadNoDataRow ?? false)) {
+                print("$rCnt 行目のデータが不正です。スキップします。");
+              }
+              else datTemp.add(ReplaceData(strtAddr, len, List<int>.empty(), name));
             }
-            else if (doLoadNoDataRow!) {
-              datTemp.add(ReplaceData(strtAddr, len, List<int>.empty(), name));
-            }
-            else datTemp.add(ReplaceData(strtAddr, len, dat!, name));
+            else datTemp.add(ReplaceData(strtAddr, len, dat, name));
           }
         }
       });
